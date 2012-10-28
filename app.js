@@ -37,8 +37,13 @@ server.listen(app.get('port'), function(){
 });
 
 io.sockets.on('connection', function (socket) {
-  socket.emit('news', { hello: 'world' });
-  socket.on('my other event', function (data) {
-    console.log(data);
+  socket.on('new message', function(data) {
+    socket.broadcast.emit('publish message', { 
+      user: data.user,
+      message: data.message 
+    });
+  });
+  socket.on('user joined', function(data){
+    socket.broadcast.emit('welcome user', { user: data.user });
   });
 });
