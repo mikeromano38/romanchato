@@ -36,6 +36,11 @@ server.listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
 });
 
+io.configure(function () {
+  io.set("transports", ["xhr-polling"]); 
+  io.set("polling duration", 10); 
+});
+
 io.sockets.on('connection', function (socket) {
   socket.on('new message', function(data) {
     socket.broadcast.emit('publish message', { 
