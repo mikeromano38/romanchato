@@ -19,6 +19,7 @@ $(function(){
         }
 
         createMessage($("<div class='chat-welcome-message message'><p>" + User.name + " just joined the room!</p></div>"));
+        chatInput.focus();
         scrollContent();
         socket.emit('user joined', {
             user: User.name
@@ -45,8 +46,8 @@ $(function(){
     }
 
     function scrollContent() {
-        console.log('scroll', );
-        chatWindow.animate({scrollTop: chatWindow.attr('scrollHeight')});
+        console.log('scroll', chatWindow.prop('scrollHeight'));
+        chatWindow.animate({scrollTop: chatWindow.prop('scrollHeight')});
     }
 
     socket.on('publish message', function(data){
@@ -55,8 +56,18 @@ $(function(){
     });
 
     socket.on('welcome user', function(data){
-        console.log(data);
         createMessage($("<div class='chat-welcome-message message'><p>" + data.user + " just joined the room!</p></div>"));
+        scrollContent();
+    });
+
+    socket.on('you there', function(data){
+        socket.emit('here I am', {
+            user: User.name
+        });
+    });
+
+    socket.on('user left', function(data){
+        createMessage($("<div class='chat-welcome-message message'><p>" + data.user + " just left the room!</p></div>"));
         scrollContent();
     });
 

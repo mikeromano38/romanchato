@@ -42,13 +42,45 @@ io.configure(function () {
 });
 
 io.sockets.on('connection', function (socket) {
+
+  var timeOut;
+  var user;
+
+  //check for client every 2 seconds
+  var interval = setInterval(function(){
+
+    //set timeout for stopping the interval
+    timeOut = setTimeout(function(){
+      clearInterval(interval);
+      console.log('A USER HAS LEFT THE CHATROOM');
+      socket.broadcast.emit('user left', {
+        user: user
+      });
+    }, 2000);
+
+    //check for client every 2 seconds
+    socket.emit('you there', {});
+
+  }, 3000);
+
+  //listen for response from client
+  socket.on('here I am', function(data){
+    console.log('CLIENT IS PRESENT', data.user);
+    clearTimeout(timeOut);
+  });
+
   socket.on('new message', function(data) {
     socket.broadcast.emit('publish message', { 
       user: data.user,
       message: data.message 
     });
   });
+
   socket.on('user joined', function(data){
     socket.broadcast.emit('welcome user', { user: data.user });
+    user = data.user;
   });
 });
+
+
+

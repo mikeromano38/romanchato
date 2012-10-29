@@ -1,3 +1,13 @@
+.borderBox {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+* {
+    .borderBox;
+}
+
 .main-heading {
     color: #333;
     font-size: 36px;
@@ -17,6 +27,7 @@
     height: 400px;
     border: 1px solid #ccc;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .chat-input {
@@ -39,4 +50,7 @@
     background-color: #ccc;
     border: 1px solid #666;
     margin: 5px 0 0 3px;
+    &:hover {
+        cursor: pointer;
+    }
 }
