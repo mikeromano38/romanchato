@@ -10,7 +10,8 @@ var express = require('express')
   , path = require('path')
   , app = express()
   , server = http.createServer(app)
-  , io = require('socket.io').listen(server);
+  , io = require('socket.io').listen(server)
+  , conversation = require('./models/conversation');
 
 app.configure(function(){
   app.set('port', process.env.PORT || 3000);
@@ -45,6 +46,7 @@ io.sockets.on('connection', function (socket) {
 
   var timeOut;
   var user;
+  var conv = conversation.getConversation();
 
   //check for client every 2 seconds
   var interval = setInterval(function(){
@@ -52,7 +54,6 @@ io.sockets.on('connection', function (socket) {
     //set timeout for stopping the interval
     timeOut = setTimeout(function(){
       clearInterval(interval);
-      console.log('A USER HAS LEFT THE CHATROOM');
       socket.broadcast.emit('user left', {
         user: user
       });
@@ -70,6 +71,7 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('new message', function(data) {
+    conversation.addMessage(data.user, data.message);
     socket.broadcast.emit('publish message', { 
       user: data.user,
       message: data.message 
@@ -78,6 +80,9 @@ io.sockets.on('connection', function (socket) {
 
   socket.on('user joined', function(data){
     socket.broadcast.emit('welcome user', { user: data.user });
+    socket.emit('existing conversation', {
+      conversation: conv
+    });
     user = data.user;
   });
 });
